@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TuringVerse — Theory of Computation</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+  <div class="nav-logo"><span class="logo-t">T</span>uring<span class="logo-v">Verse</span></div>
+  <ul class="nav-links">
+    <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+    <li><a href="#basic-tm" class="nav-link" data-section="basic-tm">Basic TM</a></li>
+    <li><a href="#variants" class="nav-link" data-section="variants">Variants</a></li>
+    <li><a href="#universal" class="nav-link" data-section="universal">Universal TM</a></li>
+    <li><a href="#languages" class="nav-link" data-section="languages">Languages</a></li>
+    <li><a href="#church" class="nav-link" data-section="church">Church's Thesis</a></li>
+  </ul>
+  <div class="nav-toggle" id="navToggle">☰</div>
+</nav>
+
+<!-- HERO SECTION -->
+<section id="home" class="section hero-section">
+  <div class="hero-bg">
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">Theory of Computation</div>
+    <h1 class="hero-title">TURING<br/><span class="hero-accent">MACHINE</span><br/>UNIVERSE</h1>
+    <p class="hero-desc">Explore the foundations of computation through interactive simulations, step-by-step visualizations, and deep conceptual explanations of Turing Machines.</p>
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="scrollToSection('basic-tm')">Start Simulating</button>
+      <button class="btn-secondary" onclick="scrollToSection('languages')">Explore Languages</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">TM Variants</span></div>
+      <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Tape Length</span></div>
+      <div class="stat"><span class="stat-num">∀</span><span class="stat-label">Computable</span></div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- BASIC TM SECTION -->
+<section id="basic-tm" class="section">
+  <div class="section-header">
+    <div class="section-tag">MODULE 01</div>
+    <h2 class="section-title">Basic Turing Machine</h2>
+    <p class="section-subtitle">A mathematical model of computation that defines an abstract machine operating on symbols on a strip of tape according to a table of rules.</p>
+  </div>
+
+  <!-- Theory Cards -->
+  <div class="theory-grid">
+    <div class="theory-card" data-delay="0">
+      <div class="card-icon">📋</div>
+      <h3>Formal Definition</h3>
+      <p>A TM is a 7-tuple: <strong>M = (Q, Σ, Γ, δ, q₀, q_accept, q_reject)</strong></p>
+      <ul class="card-list">
+        <li><span class="sym">Q</span> — Finite set of states</li>
+        <li><span class="sym">Σ</span> — Input alphabet (∌ blank)</li>
+        <li><span class="sym">Γ</span> — Tape alphabet (⊇ Σ ∪ {□})</li>
+        <li><span class="sym">δ</span> — Transition function</li>
+        <li><span class="sym">q₀</span> — Start state</li>
+        <li><span class="sym">q_a</span> — Accept state</li>
+        <li><span class="sym">q_r</span> — Reject state</li>
+      </ul>
+    </div>
+    <div class="theory-card" data-delay="1">
+      <div class="card-icon">⚙️</div>
+      <h3>Transition Function</h3>
+      <p>δ: Q × Γ → Q × Γ × {L, R}</p>
+      <div class="transition-visual">
+        <div class="tv-state">q_i</div>
+        <div class="tv-arrow">──→</div>
+        <div class="tv-result">(q_j, b, R)</div>
+      </div>
+      <p style="font-size:0.85rem;margin-top:1rem;color:var(--text-muted)">Reading symbol <em>a</em> in state <em>q_i</em>: transition to <em>q_j</em>, write <em>b</em>, move Right</p>
+    </div>
+    <div class="theory-card" data-delay="2">
+      <div class="card-icon">📝</div>
+      <h3>Instantaneous Description</h3>
+      <p>Snapshot of TM configuration:</p>
+      <div class="id-visual">
+        <span class="id-tape">a₁a₂</span><span class="id-state">q</span><span class="id-tape">a₃a₄a₅</span>
+      </div>
+      <p style="font-size:0.85rem;margin-top:0.5rem;color:var(--text-muted)">String left of state, current state, string from head position onward</p>
+    </div>
+  </div>
+
+  <!-- SIMULATOR -->
+  <div class="simulator-container" id="basicSimulator">
+    <div class="sim-header">
+      <h3 class="sim-title">⚡ Interactive TM Simulator</h3>
+      <div class="sim-controls-top">
+        <select id="exampleSelect" class="sim-select">
+          <option value="palindrome">Palindrome Checker</option>
+          <option value="anbn">aⁿbⁿ Language</option>
+          <option value="wwr">ww^R Language</option>
+          <option value="copy">String Copier</option>
+          <option value="increment">Binary Increment</option>
+          <option value="anbncn">aⁿbⁿcⁿ Language</option>
+        </select>
+        <button class="btn-load" id="loadExample">Load Example</button>
+      </div>
+    </div>
+
+    <div class="sim-body">
+      <!-- Input area -->
+      <div class="sim-input-row">
+        <label class="sim-label">Input String:</label>
+        <input type="text" id="tmInput" class="sim-input" placeholder="Enter input string..." value="abba"/>
+        <div class="sim-speed-row">
+          <label class="sim-label">Speed:</label>
+          <input type="range" id="speedSlider" min="100" max="1900" value="900" class="speed-slider"/>
+          <span id="speedDisplay">900ms</span>
+        </div>
+      </div>
+
+      <!-- Tape Display -->
+      <div class="tape-wrapper">
+        <div class="tape-label">TAPE</div>
+        <div class="tape-container" id="tapeContainer">
+          <div class="tape-track" id="tapeTrack"></div>
+        </div>
+        <div class="head-indicator" id="headIndicator">▼</div>
+      </div>
+
+      <!-- State & Info -->
+      <div class="sim-info-row">
+        <div class="info-box">
+          <div class="info-label">Current State</div>
+          <div class="info-value" id="currentState">q₀</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Head Position</div>
+          <div class="info-value" id="headPos">0</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Steps</div>
+          <div class="info-value" id="stepCount">0</div>
+        </div>
+        <div class="info-box result-box" id="resultBox">
+          <div class="info-label">Result</div>
+          <div class="info-value" id="resultValue">—</div>
+        </div>
+      </div>
+
+      <!-- STATE DIAGRAM -->
+      <div class="state-diagram-section">
+        <div class="sd-header">
+          <span class="sd-title">🔵 State Transition Diagram</span>
+          <span class="sd-hint">Active state highlighted live as TM runs</span>
+        </div>
+        <div class="state-diagram-wrapper">
+          <canvas id="stateDiagramCanvas" class="state-diagram-canvas"></canvas>
+        </div>
+        <div class="sd-legend">
+          <span class="sd-leg-item"><span class="sd-dot current"></span>Current State</span>
+          <span class="sd-leg-item"><span class="sd-dot visited"></span>Visited</span>
+          <span class="sd-leg-item"><span class="sd-dot accept"></span>Accept (qₐ)</span>
+          <span class="sd-leg-item"><span class="sd-dot reject"></span>Reject (q_r)</span>
+          <span class="sd-leg-item"><span class="sd-edge-ex"></span>a/b,R = read a, write b, move Right</span>
+        </div>
+      </div>
+
+      <!-- Step-by-step log -->
+      <div class="step-log" id="stepLog">
+        <div class="log-header">Computation Trace</div>
+        <div class="log-entries" id="logEntries"></div>
+      </div>
+
+      <!-- Transition Table -->
+      <div class="transition-table-wrapper">
+        <div class="tt-header">Transition Table (δ)</div>
+        <div class="table-scroll">
+          <table class="transition-table" id="transitionTable">
+            <thead>
+              <tr>
+                <th>State</th><th>Read</th><th>Write</th><th>Move</th><th>Next State</th>
+              </tr>
+            </thead>
+            <tbody id="transitionBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="sim-controls">
+        <button class="ctrl-btn" id="resetBtn" title="Reset">⏮ Reset</button>
+        <button class="ctrl-btn" id="stepBtn" title="Step">⏭ Step</button>
+        <button class="ctrl-btn primary" id="runBtn" title="Run">▶ Run</button>
+        <button class="ctrl-btn" id="pauseBtn" title="Pause" disabled>⏸ Pause</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VARIANTS SECTION -->
+<section id="variants" class="section dark-section">
+  <div class="section-header">
+    <div class="section-tag">MODULE 02</div>
+    <h2 class="section-title">Variants of Turing Machine</h2>
+    <p class="section-subtitle">Despite appearing more powerful, all TM variants are equivalent in computational power to the standard TM.</p>
+  </div>
+
+  <div class="variant-tabs">
+    <button class="vtab active" data-tab="multitape">Multi-Tape TM</button>
+    <button class="vtab" data-tab="nondeterministic">Non-Deterministic TM</button>
+    <button class="vtab" data-tab="multitrack">Multi-Track TM</button>
+    <button class="vtab" data-tab="twoway">2-Way Infinite Tape</button>
+    <button class="vtab" data-tab="integer">TM as Integer Computer</button>
+  </div>
+
+  <div class="variant-content">
+    <!-- Multi-Tape TM -->
+    <div class="variant-panel active" id="tab-multitape">
+      <div class="variant-layout">
+        <div class="variant-info">
+          <h3>Multi-Tape Turing Machine</h3>
+          <p>A TM with <strong>k tapes</strong>, each with its own read/write head. Transition function reads all heads simultaneously and writes/moves independently.</p>
+          <div class="formula-box">δ: Q × Γᵏ → Q × Γᵏ × {L,R,S}ᵏ</div>
+          <h4>Key Properties:</h4>
+          <ul class="variant-list">
+            <li>Each tape can be read/written independently</li>
+            <li>Equivalence: Any k-tape TM can be simulated by a single-tape TM</li>
+            <li>Simulation overhead: O(t²) steps where t is original computation steps</li>
+            <li>Tape 1 typically holds input; extra tapes used as work space</li>
+          </ul>
+          <div class="equivalence-badge">✓ Equivalent to Standard TM</div>
+        </div>
+        <div class="variant-visual" id="multitapeVisual">
+          <div class="mt-sim">
+            <h4>2-Tape TM Simulation — aⁿbⁿ</h4>
+            <div class="mt-example">
+              <div class="mt-tape-group" id="mt-tapes"></div>
+              <div class="mt-controls">
+                <button class="btn-mini" id="mt-run">▶ Next Step</button>
+                <button class="btn-mini" id="mt-reset">↺ Reset</button>
+              </div>
+              <div class="mt-desc" id="mt-desc">Demonstrating aⁿbⁿ recognition using 2 tapes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Non-Deterministic TM -->
+    <div class="variant-panel" id="tab-nondeterministic">
+      <div class="variant-layout">
+        <div class="variant-info">
+          <h3>Non-Deterministic Turing Machine (NTM)</h3>
+          <p>At each step, the NTM may have <strong>multiple possible transitions</strong>. It accepts if ANY branch of computation accepts.</p>
+          <div class="formula-box">δ: Q × Γ → P(Q × Γ × {L,R})</div>
+          <h4>Key Properties:</h4>
+          <ul class="variant-list">
+            <li>Computation is a tree of possibilities</li>
+            <li>Accepts if any path leads to accept state</li>
+            <li>Equivalent to DTM (simulate using BFS over computation tree)</li>
+            <li>Simulation overhead: exponential in time</li>
+          </ul>
+          <div class="equivalence-badge">✓ Equivalent to Standard TM</div>
+        </div>
+        <div class="variant-visual">
+          <div class="ntm-tree" id="ntmTree">
+            <h4>NTM Computation Tree</h4>
+            <div class="tree-container" id="treeContainer"></div>
+            <div class="mt-controls" style="margin-top:1rem">
+              <button class="btn-mini" id="ntm-run">▶ Expand Tree</button>
+              <button class="btn-mini" id="ntm-reset">↺ Reset</button>
+            </div>
+            <div class="mt-desc" id="ntm-desc">NTM exploring all computation paths</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Track TM -->
+    <div class="variant-panel" id="tab-multitrack">
+      <div class="variant-layout">
+        <div class="variant-info">
+          <h3>Multi-Track Turing Machine</h3>
+          <p>A single tape divided into <strong>multiple tracks</strong>. Each cell contains a tuple of symbols, one per track.</p>
+          <div class="formula-box">Each cell: (a₁, a₂, ..., aₖ) ∈ Γ₁ × Γ₂ × ... × Γₖ</div>
+          <h4>Key Properties:</h4>
+          <ul class="variant-list">
+            <li>Single tape head reads all tracks simultaneously</li>
+            <li>Useful for storing auxiliary information alongside input</li>
+            <li>Easily convertible to standard TM (encode tuples as single symbols)</li>
+            <li>Common use: track "marked" vs "unmarked" symbols</li>
+          </ul>
+          <div class="equivalence-badge">✓ Equivalent to Standard TM</div>
+        </div>
+        <div class="variant-visual">
+          <div class="mtrack-sim">
+            <h4>2-Track TM — Marking Algorithm</h4>
+            <div id="mtrack-display"></div>
+            <div class="mt-controls" style="margin-top:1rem">
+              <button class="btn-mini" id="mtrack-run">▶ Next Step</button>
+              <button class="btn-mini" id="mtrack-reset">↺ Reset</button>
+            </div>
+            <div class="mt-desc" id="mtrack-desc">Track 1: original input | Track 2: markers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Way Infinite Tape -->
+    <div class="variant-panel" id="tab-twoway">
+      <div class="variant-layout">
+        <div class="variant-info">
+          <h3>Two-Way Infinite Tape TM</h3>
+          <p>Tape is <strong>infinite in both directions</strong> (−∞ to +∞) instead of being bounded on the left.</p>
+          <div class="formula-box">Tape: ... □ □ a₁ a₂ ... aₙ □ □ ...</div>
+          <h4>Key Properties:</h4>
+          <ul class="variant-list">
+            <li>Head can move left indefinitely (no left boundary)</li>
+            <li>Simulation: fold the tape — upper half for positive positions, lower for negative</li>
+            <li>Simulated by 2-track TM with standard semi-infinite tape</li>
+            <li>More natural model for some algorithms</li>
+          </ul>
+          <div class="equivalence-badge">✓ Equivalent to Standard TM</div>
+        </div>
+        <div class="variant-visual">
+          <div class="twoway-display" id="twowayDisplay">
+            <h4>Bidirectional Tape — Explore Freely</h4>
+            <div id="twoway-tape-visual" style="display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;padding:0.5rem;background:var(--bg-secondary);border-radius:4px;"></div>
+            <div class="mt-controls" style="margin-top:1rem">
+              <button class="btn-mini" id="twoway-left">← Move Left</button>
+              <button class="btn-mini" id="twoway-right">Move Right →</button>
+              <button class="btn-mini" id="twoway-reset">↺ Reset</button>
+            </div>
+            <div class="mt-desc" id="twoway-desc">Position: 0 | Demonstrating infinite bidirectional tape</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TM as Integer Computer -->
+    <div class="variant-panel" id="tab-integer">
+      <div class="variant-layout">
+        <div class="variant-info">
+          <h3>TM as Computer of Integer Functions</h3>
+          <p>TM can compute <strong>integer functions</strong> f: ℕᵏ → ℕ by encoding integers in unary (n = 1ⁿ) or binary.</p>
+          <div class="formula-box">Input: 1ⁿ (n ones) → Compute f(n) → Output: 1^f(n)</div>
+          <h4>Computable Functions:</h4>
+          <ul class="variant-list">
+            <li>Addition: f(m, n) = m + n</li>
+            <li>Multiplication: f(m, n) = m × n</li>
+            <li>Monus: f(m, n) = max(m−n, 0)</li>
+            <li>Any primitive recursive function</li>
+          </ul>
+          <h4 style="margin-top:1rem">Encoding:</h4>
+          <p style="font-size:0.85rem;color:var(--text-muted)">Multiple args separated by 0: <code>1^m 0 1^n</code> represents (m, n)</p>
+          <div class="equivalence-badge">⚡ Computes All Partial Recursive Functions</div>
+        </div>
+        <div class="variant-visual">
+          <div class="integer-sim">
+            <h4>Integer Function Simulator</h4>
+            <div class="int-controls">
+              <select id="intFunc" class="sim-select">
+                <option value="add">Addition (m + n)</option>
+                <option value="mul">Multiplication (m × n)</option>
+                <option value="monus">Monus (m ∸ n)</option>
+              </select>
+              <div class="int-inputs">
+                <input type="number" id="intA" class="int-input" value="3" min="0" max="9"/>
+                <span class="int-op" id="intOpDisplay">+</span>
+                <input type="number" id="intB" class="int-input" value="2" min="0" max="9"/>
+              </div>
+              <button class="btn-mini" id="int-compute">⚡ Compute</button>
+            </div>
+            <div class="int-tape-display" id="intTapeDisplay">
+              <div class="int-label">Unary Encoding:</div>
+              <div id="int-tape-visual"></div>
+            </div>
+            <div class="int-result" id="intResult"></div>
+            <div class="mt-desc" id="int-desc">Select function and enter values</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UNIVERSAL TM SECTION -->
+<section id="universal" class="section">
+  <div class="section-header">
+    <div class="section-tag">MODULE 03</div>
+    <h2 class="section-title">Universal Turing Machine</h2>
+    <p class="section-subtitle">A UTM simulates any TM M on any input w by reading the encoding ⟨M, w⟩ from its tape — the theoretical foundation of modern computers.</p>
+  </div>
+
+  <div class="utm-layout">
+    <div class="utm-theory">
+      <div class="theory-card" style="margin-bottom:1.5rem">
+        <div class="card-icon">🌐</div>
+        <h3>What is a UTM?</h3>
+        <p>The Universal Turing Machine U takes as input the <strong>encoding ⟨M⟩</strong> of any TM M and an input <strong>w</strong>, and simulates M on w.</p>
+        <div class="formula-box" style="margin:1rem 0">U accepts ⟨M, w⟩ ⟺ M accepts w</div>
+        <p style="color:var(--text-muted);font-size:0.9rem">This is the basis of stored-program computers — the program (TM) is just data on the tape!</p>
+      </div>
+
+      <div class="theory-card">
+        <div class="card-icon">📦</div>
+        <h3>TM Encoding</h3>
+        <p>To encode TM M = (Q, Σ, Γ, δ, q₀, q_a, q_r):</p>
+        <ul class="card-list">
+          <li>States: q₁, q₂, ..., qₙ (q₁ = start)</li>
+          <li>Symbols: 0→X₁, 1→X₂, □→X₃</li>
+          <li>Directions: L→D₁, R→D₂</li>
+          <li>Each rule encoded in binary</li>
+          <li>Rules separated by 11, encoding by 111</li>
+        </ul>
+        <div class="encoding-example">
+          <div class="enc-label">Example encoding fragment:</div>
+          <div class="enc-value">0i 1 0j 1 0k 1 0l 1 0m</div>
+          <div class="enc-caption">q_i reads X_j → write X_k, move D_l, go to q_m</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="utm-sim-panel">
+      <div class="utm-sim">
+        <div class="utm-sim-header">
+          <h3>Universal TM Simulator</h3>
+          <p>U simulates the selected TM on your input, step by step</p>
+        </div>
+
+        <div class="utm-select-area">
+          <label class="sim-label">Select TM to simulate:</label>
+          <select id="utmTMSelect" class="sim-select">
+            <option value="anbn">M₁: aⁿbⁿ Acceptor</option>
+            <option value="palindrome">M₂: Palindrome Checker</option>
+            <option value="increment">M₃: Binary Increment</option>
+          </select>
+          <label class="sim-label" style="margin-top:1rem">Input for M:</label>
+          <input type="text" id="utmInput" class="sim-input" placeholder="e.g. aabb" value="aabb"/>
+          <div class="utm-encoding-display" id="utmEncoding">
+            <span class="enc-label">⟨M, w⟩ encoding: </span>
+            <span id="utmEncodingValue" class="enc-mono">—</span>
+          </div>
+        </div>
+
+        <div class="utm-tapes-container">
+          <div class="utm-tape-row">
+            <div class="utm-tape-label">U's Description Tape (encoded TM rules)</div>
+            <div class="tape-container slim" id="utmDescTape"></div>
+          </div>
+          <div class="utm-tape-row">
+            <div class="utm-tape-label">Simulated M's Tape (working tape)</div>
+            <div class="tape-container slim" id="utmInputTape"></div>
+          </div>
+          <div class="utm-tape-row">
+            <div class="utm-tape-label">State Tracker (U tracks M's current state)</div>
+            <div class="tape-container slim" id="utmStateTape"></div>
+          </div>
+        </div>
+
+        <div class="utm-info-row">
+          <div class="info-box">
+            <div class="info-label">U's Phase</div>
+            <div class="info-value" id="utmState">INIT</div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">M's State</div>
+            <div class="info-value" id="utmMState">q₁</div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">Step</div>
+            <div class="info-value" id="utmStep">0</div>
+          </div>
+          <div class="info-box result-box" id="utmResultBox">
+            <div class="info-label">U's Decision</div>
+            <div class="info-value" id="utmResult">—</div>
+          </div>
+        </div>
+
+        <div class="step-log">
+          <div class="log-header">UTM Simulation Log</div>
+          <div class="log-entries" id="utmLog"></div>
+        </div>
+
+        <div class="sim-controls">
+          <button class="ctrl-btn" id="utmReset">⏮ Reset</button>
+          <button class="ctrl-btn" id="utmStep">⏭ Step</button>
+          <button class="ctrl-btn primary" id="utmRun">▶ Run</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UTM Significance -->
+  <div class="utm-significance">
+    <h3>Why UTM Matters</h3>
+    <div class="sig-cards">
+      <div class="sig-card">
+        <div class="sig-icon">💻</div>
+        <h4>Stored-Program Computers</h4>
+        <p>Modern CPUs implement UTM — they execute arbitrary programs stored in memory</p>
+      </div>
+      <div class="sig-card">
+        <div class="sig-icon">🚫</div>
+        <h4>Undecidability</h4>
+        <p>The Halting Problem proves not all problems are solvable — derived from UTM's self-reference</p>
+      </div>
+      <div class="sig-card">
+        <div class="sig-icon">🔄</div>
+        <h4>Software Concept</h4>
+        <p>Separating "program" from "machine" is UTM's key insight — hardware vs software</p>
+      </div>
+      <div class="sig-card">
+        <div class="sig-icon">∞</div>
+        <h4>Universality</h4>
+        <p>One machine can compute anything any other machine can — foundation of general-purpose computing</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LANGUAGES SECTION -->
+<section id="languages" class="section dark-section">
+  <div class="section-header">
+    <div class="section-tag">MODULE 04</div>
+    <h2 class="section-title">Languages &amp; TM Acceptance</h2>
+    <p class="section-subtitle">Understanding what kinds of problems Turing Machines can solve — and their fundamental limits.</p>
+  </div>
+
+  <!-- Chomsky Hierarchy -->
+  <div class="chomsky-hierarchy">
+    <h3 class="ch-title">Chomsky Hierarchy</h3>
+    <div class="hierarchy-visual" id="hierarchyViz"></div>
+  </div>
+
+  <!-- Recursive vs RE -->
+  <div class="lang-comparison">
+    <div class="lang-card recursive">
+      <div class="lang-header">
+        <div class="lang-icon">✅</div>
+        <h3>Recursive Languages</h3>
+        <div class="lang-badge">Decidable</div>
+      </div>
+      <div class="lang-body">
+        <p>A language L is <strong>recursive (decidable)</strong> if there exists a TM M such that:</p>
+        <ul class="lang-list">
+          <li>M <em>accepts</em> every w ∈ L</li>
+          <li>M <em>rejects</em> every w ∉ L</li>
+          <li>M always <strong>halts</strong> on all inputs</li>
+        </ul>
+        <div class="lang-formula">L is recursive ⟺ L and L̄ are both RE</div>
+        <h4>Examples:</h4>
+        <div class="example-list">
+          <div class="ex-item" onclick="runLangExample('anbn')">
+            <span class="ex-name">aⁿbⁿ</span>
+            <span class="ex-desc">Equal a's and b's</span>
+            <span class="ex-run">▶ Test</span>
+          </div>
+          <div class="ex-item" onclick="runLangExample('palindrome')">
+            <span class="ex-name">Palindromes</span>
+            <span class="ex-desc">Reads same forwards &amp; backwards</span>
+            <span class="ex-run">▶ Test</span>
+          </div>
+          <div class="ex-item" onclick="runLangExample('anbncn')">
+            <span class="ex-name">aⁿbⁿcⁿ</span>
+            <span class="ex-desc">Equal counts of a, b, c</span>
+            <span class="ex-run">▶ Test</span>
+          </div>
+          <div class="ex-item" onclick="runLangExample('wwr')">
+            <span class="ex-name">{ww^R}</span>
+            <span class="ex-desc">Concatenation with reverse</span>
+            <span class="ex-run">▶ Test</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lang-card re">
+      <div class="lang-header">
+        <div class="lang-icon">⚡</div>
+        <h3>Recursively Enumerable</h3>
+        <div class="lang-badge re-badge">Semi-Decidable</div>
+      </div>
+      <div class="lang-body">
+        <p>A language L is <strong>recursively enumerable (RE)</strong> if there exists a TM M such that:</p>
+        <ul class="lang-list">
+          <li>M <em>accepts</em> every w ∈ L</li>
+          <li>M may <em>reject OR loop forever</em> for w ∉ L</li>
+          <li>M may <strong>not halt</strong> on all inputs</li>
+        </ul>
+        <div class="lang-formula">Recursive ⊊ RE</div>
+        <h4>Examples:</h4>
+        <div class="example-list">
+          <div class="ex-item">
+            <span class="ex-name">Halting Problem</span>
+            <span class="ex-desc">L_HP = {⟨M,w⟩ : M halts on w}</span>
+            <span class="ex-tag">RE but not Recursive</span>
+          </div>
+          <div class="ex-item">
+            <span class="ex-name">L_u</span>
+            <span class="ex-desc">Universal language {⟨M,w⟩ : M accepts w}</span>
+            <span class="ex-tag">RE but not Recursive</span>
+          </div>
+          <div class="ex-item">
+            <span class="ex-name">Diophantine Eqs</span>
+            <span class="ex-desc">Solvable integer polynomial equations</span>
+            <span class="ex-tag">RE</span>
+          </div>
+        </div>
+        <div class="non-re-box">
+          <strong>Non-RE:</strong> L̄_HP (complement of halting problem) — <em>no TM can even semi-decide this!</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language Tester -->
+  <div class="lang-tester">
+    <h3>Language Membership Tester</h3>
+    <div class="lt-body">
+      <div class="lt-select-row">
+        <select id="langSelect" class="sim-select">
+          <option value="anbn">aⁿbⁿ (Recursive)</option>
+          <option value="palindrome">Palindromes over {a,b} (Recursive)</option>
+          <option value="anbncn">aⁿbⁿcⁿ (Recursive)</option>
+          <option value="wwr">ww^R (Recursive)</option>
+        </select>
+        <input type="text" id="langInput" class="sim-input" placeholder="Enter test string..." value="aabb"/>
+        <button class="btn-primary" id="langTest">Test Membership</button>
+      </div>
+      <div class="tape-wrapper" style="margin:1rem 0">
+        <div class="tape-label">TAPE</div>
+        <div class="tape-container" id="langTapeContainer">
+          <div class="tape-track" id="langTapeTrack"></div>
+        </div>
+      </div>
+      <div class="sim-info-row">
+        <div class="info-box"><div class="info-label">State</div><div class="info-value" id="langState">—</div></div>
+        <div class="info-box"><div class="info-label">Steps</div><div class="info-value" id="langSteps">0</div></div>
+        <div class="info-box result-box" id="langResultBox">
+          <div class="info-label">Verdict</div>
+          <div class="info-value" id="langResult">—</div>
+        </div>
+      </div>
+      <div class="step-log">
+        <div class="log-header">Acceptance Trace</div>
+        <div class="log-entries" id="langLog"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHURCH'S THESIS -->
+<section id="church" class="section">
+  <div class="section-header">
+    <div class="section-tag">MODULE 05</div>
+    <h2 class="section-title">Church-Turing Thesis</h2>
+    <p class="section-subtitle">The fundamental conjecture connecting intuitive computability to formal TM computation.</p>
+  </div>
+
+  <div class="church-layout">
+    <div class="church-statement">
+      <div class="big-quote">"</div>
+      <p class="church-quote">Every effectively computable function is computable by a Turing Machine.</p>
+      <p class="church-attribution">— Alonzo Church &amp; Alan Turing, ~1936</p>
+    </div>
+
+    <div class="church-cards">
+      <div class="church-card">
+        <h4>What It Claims</h4>
+        <p>Any function that can be computed by any algorithmic means (human, computer, any model) can also be computed by a Turing Machine.</p>
+      </div>
+      <div class="church-card">
+        <h4>Why It's a Thesis, Not a Theorem</h4>
+        <p>It cannot be formally proved because "effectively computable" is an intuitive, informal concept. It's supported by evidence: every known model of computation is TM-equivalent.</p>
+      </div>
+      <div class="church-card">
+        <h4>Equivalent Formulations</h4>
+        <ul style="padding-left:1rem;color:var(--text-muted);font-size:0.85rem">
+          <li>λ-calculus (Church)</li>
+          <li>μ-recursive functions (Kleene)</li>
+          <li>Post correspondence systems</li>
+          <li>RAM machines, C programs</li>
+          <li>Cellular automata</li>
+        </ul>
+      </div>
+      <div class="church-card">
+        <h4>Implications</h4>
+        <ul style="padding-left:1rem;color:var(--text-muted);font-size:0.85rem">
+          <li>Sets a limit on what computers can do</li>
+          <li>Undecidable problems are <em>absolutely</em> unsolvable</li>
+          <li>No super-Turing computer can exist</li>
+          <li>Justifies using informal algorithms as TMs</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="equivalence-diagram">
+      <h3>Equivalent Models of Computation</h3>
+      <div class="eq-diagram" id="eqDiagram"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <div class="nav-logo"><span class="logo-t">T</span>uring<span class="logo-v">Verse</span></div>
+      <p>Theory of Computation — Turing Machine Interactive Simulator</p>
+    </div>
+    <div class="footer-info">
+      <p>Built for academic exploration of TM concepts</p>
+      <p>Unit 5: Turing Machines | Theory of Computation</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header" id="modalHeader"></div>
+    <div class="modal-body" id="modalBody"></div>
+    <button class="btn-primary" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
